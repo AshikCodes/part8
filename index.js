@@ -96,10 +96,17 @@ const typeDefs = gql`
     id: String!
     genres: [String!]!
   }
+  type Author {
+    name: String!
+    id: String!
+    born: Int
+    bookCount: Int
+  }
   type Query {
     bookCount: Int!
     authorCount: Int!
     allBooks: [Book!]!
+    allAuthors: [Author!]!
   }
 `;
 
@@ -108,6 +115,28 @@ const resolvers = {
     bookCount: () => books.length,
     authorCount: () => authors.length,
     allBooks: () => books,
+    allAuthors: () => {
+      var count = 0;
+      var authorBookCounts = new Array(authors.length);
+
+      for (let i = 0; i < authors.length; i++) {
+        for (let y = 0; y < books.length; y++) {
+          if (books[y].author == authors[i].name) {
+            count++;
+          }
+        }
+        authorBookCounts[i] = count;
+        count = 0;
+      }
+
+      for (let i = 0; i < authors.length; i++) {
+        for (let i = 0; i < authors.length; i++) {
+          authors[i].bookCount = authorBookCounts[i];
+        }
+      }
+      console.log("authors is", authors);
+      return authors;
+    },
   },
 };
 
