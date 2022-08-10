@@ -4,7 +4,7 @@ const { v4: uuid } = require("uuid");
 
 var fs = require("fs");
 
-//done 8.6
+//done 8.7
 let authors;
 var updatedAuthorFile = "/Users/ashikreji/part8/updatedAuthors.js";
 
