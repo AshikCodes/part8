@@ -1,33 +1,46 @@
 const { ApolloServer, gql } = require("apollo-server");
 
 const { v4: uuid } = require("uuid");
+
 var fs = require("fs");
 
-let authors = [
-  {
-    name: "Robert Martin",
-    id: "afa51ab0-344d-11e9-a414-719c6709cf3e",
-    born: 1952,
-  },
-  {
-    name: "Martin Fowler",
-    id: "afa5b6f0-344d-11e9-a414-719c6709cf3e",
-    born: 1963,
-  },
-  {
-    name: "Fyodor Dostoevsky",
-    id: "afa5b6f1-344d-11e9-a414-719c6709cf3e",
-    born: 1821,
-  },
-  {
-    name: "Joshua Kerievsky", // birthyear not known
-    id: "afa5b6f2-344d-11e9-a414-719c6709cf3e",
-  },
-  {
-    name: "Sandi Metz", // birthyear not known
-    id: "afa5b6f3-344d-11e9-a414-719c6709cf3e",
-  },
-];
+//done 8.6
+let authors;
+var updatedAuthorFile = "/Users/ashikreji/part8/updatedAuthors.js";
+
+if (fs.existsSync(updatedAuthorFile)) {
+  var updatedAuthors = require(updatedAuthorFile);
+  console.log(`updatedAuthors is ${updatedAuthors}`);
+  console.log(`updatedAuthors: ${updatedAuthors.length} authors`);
+  authors = updatedAuthors;
+} else {
+  console.log("nothing for authors");
+  authors = [
+    {
+      name: "Robert Martin",
+      id: "afa51ab0-344d-11e9-a414-719c6709cf3e",
+      born: 1952,
+    },
+    {
+      name: "Martin Fowler",
+      id: "afa5b6f0-344d-11e9-a414-719c6709cf3e",
+      born: 1963,
+    },
+    {
+      name: "Fyodor Dostoevsky",
+      id: "afa5b6f1-344d-11e9-a414-719c6709cf3e",
+      born: 1821,
+    },
+    {
+      name: "Joshua Kerievsky", // birthyear not known
+      id: "afa5b6f2-344d-11e9-a414-719c6709cf3e",
+    },
+    {
+      name: "Sandi Metz", // birthyear not known
+      id: "afa5b6f3-344d-11e9-a414-719c6709cf3e",
+    },
+  ];
+}
 
 /*
  * Suomi:
@@ -39,57 +52,70 @@ let authors = [
  * However, for simplicity, we will store the author's name in connection with the book
  */
 
-let books = [
-  {
-    title: "Clean Code",
-    published: 2008,
-    author: "Robert Martin",
-    id: "afa5b6f4-344d-11e9-a414-719c6709cf3e",
-    genres: ["refactoring"],
-  },
-  {
-    title: "Agile software development",
-    published: 2002,
-    author: "Robert Martin",
-    id: "afa5b6f5-344d-11e9-a414-719c6709cf3e",
-    genres: ["agile", "patterns", "design"],
-  },
-  {
-    title: "Refactoring, edition 2",
-    published: 2018,
-    author: "Martin Fowler",
-    id: "afa5de00-344d-11e9-a414-719c6709cf3e",
-    genres: ["refactoring"],
-  },
-  {
-    title: "Refactoring to patterns",
-    published: 2008,
-    author: "Joshua Kerievsky",
-    id: "afa5de01-344d-11e9-a414-719c6709cf3e",
-    genres: ["refactoring", "patterns"],
-  },
-  {
-    title: "Practical Object-Oriented Design, An Agile Primer Using Ruby",
-    published: 2012,
-    author: "Sandi Metz",
-    id: "afa5de02-344d-11e9-a414-719c6709cf3e",
-    genres: ["refactoring", "design"],
-  },
-  {
-    title: "Crime and punishment",
-    published: 1866,
-    author: "Fyodor Dostoevsky",
-    id: "afa5de03-344d-11e9-a414-719c6709cf3e",
-    genres: ["classic", "crime"],
-  },
-  {
-    title: "The Demon ",
-    published: 1872,
-    author: "Fyodor Dostoevsky",
-    id: "afa5de04-344d-11e9-a414-719c6709cf3e",
-    genres: ["classic", "revolution"],
-  },
-];
+//Writing to a new file
+let books;
+var updatedBookFile = "/Users/ashikreji/part8/updatedBooks.js";
+
+if (fs.existsSync(updatedBookFile)) {
+  var updatedBooks = require(updatedBookFile);
+  console.log(`updatedBooks is ${updatedBooks}`);
+  console.log(`updatedBooks: ${updatedBooks.length} books`);
+  books = updatedBooks;
+} else {
+  console.log("nothing");
+  books = [
+    {
+      title: "Clean Code",
+      published: 2008,
+      author: "Robert Martin",
+      id: "afa5b6f4-344d-11e9-a414-719c6709cf3e",
+      genres: ["refactoring"],
+    },
+    {
+      title: "Agile software development",
+      published: 2002,
+      author: "Robert Martin",
+      id: "afa5b6f5-344d-11e9-a414-719c6709cf3e",
+      genres: ["agile", "patterns", "design"],
+    },
+    {
+      title: "Refactoring, edition 2",
+      published: 2018,
+      author: "Martin Fowler",
+      id: "afa5de00-344d-11e9-a414-719c6709cf3e",
+      genres: ["refactoring"],
+    },
+    {
+      title: "Refactoring to patterns",
+      published: 2008,
+      author: "Joshua Kerievsky",
+      id: "afa5de01-344d-11e9-a414-719c6709cf3e",
+      genres: ["refactoring", "patterns"],
+    },
+    {
+      title: "Practical Object-Oriented Design, An Agile Primer Using Ruby",
+      published: 2012,
+      author: "Sandi Metz",
+      id: "afa5de02-344d-11e9-a414-719c6709cf3e",
+      genres: ["refactoring", "design"],
+    },
+    {
+      title: "Crime and punishment",
+      published: 1866,
+      author: "Fyodor Dostoevsky",
+      id: "afa5de03-344d-11e9-a414-719c6709cf3e",
+      genres: ["classic", "crime"],
+    },
+    {
+      title: "The Demon ",
+      published: 1872,
+      author: "Fyodor Dostoevsky",
+      id: "afa5de04-344d-11e9-a414-719c6709cf3e",
+      genres: ["classic", "revolution"],
+    },
+  ];
+}
+//Writing to a new file
 
 const typeDefs = gql`
   type Book {
@@ -118,6 +144,7 @@ const typeDefs = gql`
       author: String!
       genres: [String!]!
     ): Book
+    editAuthor(name: String!, setBornTo: Int!): Author
   }
 `;
 
@@ -162,16 +189,48 @@ const resolvers = {
       const book = { ...args, id: uuid() };
       books = books.concat(book);
 
-      if (authors.some((a) => a.name === book.author)) {
+      console.log(`books here is ${books}`);
+      fs.writeFile(
+        "updatedBooks.js",
+        `\n const books = ${JSON.stringify(
+          books
+        )} \n module.exports = books \n`,
+        () => {
+          console.log("updated books array");
+        }
+      );
+
+      if (authors.some((a) => a.name === book.author) == false) {
         const newAuthor = { name: book.author, id: uuid() };
         authors = authors.concat(newAuthor);
+
+        fs.writeFile(
+          "updatedAuthors.js",
+          `\n const authors = ${JSON.stringify(
+            authors
+          )} \n module.exports = authors`,
+          () => {
+            console.log("updated authors array");
+          }
+        );
       }
 
-      console.log(`books here is ${books}`);
-      // fs.writeFile("lololol.js", JSON.stringify(books), () => {
-      //   console.log("yuh");
-      // });
       return book;
+    },
+    editAuthor: (root, args) => {
+      console.log(`authors here is ${args.name}`);
+      console.log(`args is ${args.setBornTo}`);
+      console.log(`args is ${JSON.stringify(authors)}`);
+
+      const authorEdited = authors.find((a) => a.name == args.name);
+
+      if (authorEdited == null) {
+        return null;
+      }
+
+      authorEdited.born = args.setBornTo;
+
+      return authorEdited;
     },
   },
 };
