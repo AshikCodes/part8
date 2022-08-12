@@ -1,10 +1,26 @@
 const { ApolloServer, gql } = require("apollo-server");
-
+require("dotenv").config();
+const Book = require("./models/Book");
+const Author = require("./models/Author");
+const mongoose = require("mongoose");
 const { v4: uuid } = require("uuid");
 
 var fs = require("fs");
 
-//done 8.7
+const uri = process.env.MONGODB_URI;
+
+console.log("connecting to", uri);
+
+//Connecting to MongoDB
+mongoose
+  .connect(uri)
+  .then(() => {
+    console.log("connected to db!");
+  })
+  .catch((error) => {
+    console.log("error while connecting to db", error);
+  });
+
 let authors;
 var updatedAuthorFile = "/Users/ashikreji/part8/updatedAuthors.js";
 
@@ -121,7 +137,7 @@ const typeDefs = gql`
   type Book {
     title: String!
     published: Int!
-    author: String!
+    author: Author!
     id: String!
     genres: [String!]!
   }
@@ -143,14 +159,15 @@ const typeDefs = gql`
       published: Int!
       author: String!
       genres: [String!]!
-    ): Book
+    ): Book!
     editAuthor(name: String!, setBornTo: Int!): Author
   }
 `;
 
 const resolvers = {
   Query: {
-    bookCount: () => books.length,
+    // bookCount: () => books.length,
+    bookCount: async () => Book.collection.countDocuments(),
     authorCount: () => authors.length,
     allBooks: (root, args) => {
       console.log("args is", args.genre);
@@ -185,37 +202,11 @@ const resolvers = {
     },
   },
   Mutation: {
-    addBook: (root, args) => {
-      const book = { ...args, id: uuid() };
-      books = books.concat(book);
-
-      console.log(`books here is ${books}`);
-      fs.writeFile(
-        "updatedBooks.js",
-        `\n const books = ${JSON.stringify(
-          books
-        )} \n module.exports = books \n`,
-        () => {
-          console.log("updated books array");
-        }
-      );
-
-      if (authors.some((a) => a.name === book.author) == false) {
-        const newAuthor = { name: book.author, id: uuid() };
-        authors = authors.concat(newAuthor);
-
-        fs.writeFile(
-          "updatedAuthors.js",
-          `\n const authors = ${JSON.stringify(
-            authors
-          )} \n module.exports = authors`,
-          () => {
-            console.log("updated authors array");
-          }
-        );
-      }
-
-      return book;
+    addBook: async (root, args) => {
+      const authorObj = await Author.findOne({ name: args.author });
+      console.log("author here is", authorObj);
+      const newBook = new Book({ ...args, author: authorObj });
+      return newBook.save();
     },
     editAuthor: (root, args) => {
       console.log(`authors here is ${args.name}`);
@@ -227,7 +218,6 @@ const resolvers = {
       if (authorEdited == null) {
         return null;
       }
-
       authorEdited.born = args.setBornTo;
 
       return authorEdited;
